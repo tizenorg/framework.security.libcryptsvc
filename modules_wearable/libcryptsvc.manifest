@@ -1,0 +1,12 @@
+<manifest>
+        <define>
+                <domain name="libcryptsvc"/>
+        </define>
+        <request>
+                <domain name="libcryptsvc"/>
+        </request>
+        <assign>
+                <filesystem path="/usr/lib/*" label="_"/>
+		<filesystem path="/opt/etc/duid-gadget*" label="_" exec_label="_"/>
+        </assign>
+</manifest>

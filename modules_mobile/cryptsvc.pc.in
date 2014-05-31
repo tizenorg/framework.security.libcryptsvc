@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=@PREFIX@
+libdir=@PREFIX@/lib
+includedir=@PREFIX@/include
+
+Name: @PC_NAME@
+Description: @DESCRIPTION@
+Version: @FULLVER@
+Requires: @PC_REQUIRED@
+Libs: -L${libdir} @PC_LDFLAGS@
+Cflags: -I${includedir}
+
