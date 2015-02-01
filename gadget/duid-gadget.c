@@ -30,7 +30,8 @@ int main(int argc, char** argv)
 	char info[] = {0xca, 0xfe, 0xbe, 0xbe, 0x78, 0x07, 0x02, 0x03};
 	bool result = true;
 	int keyLen = 20;
-
+	char *pKeyVersion = NULL;
+	const char *version = "1.0#";
 /*	if(argc != 2)
 	{
 		fprintf(stderr, "Invalid Input [%d]\n", argc);
@@ -56,8 +57,14 @@ int main(int argc, char** argv)
     PKCS5_PBKDF2_HMAC_SHA1(info, 8, (unsigned char*)pKey, keyLen, 1, keyLen, (unsigned char*)pDuid);
 
 	pId = Base64Encoding(pDuid, keyLen);
-	printf("%s", pId);
+//	printf("%s", pId);
 
+	pKeyVersion = (char*)calloc(strlen(pId)+strlen(version)+1, sizeof(char));
+	strncpy(pKeyVersion, version, strlen(version));
+	strncat(pKeyVersion, pId, strlen(pId));
+	printf("%s\n", pKeyVersion);
+
+	free(pKeyVersion);
 	free(pId);
 	free(pKey);
 	free(pDuid);

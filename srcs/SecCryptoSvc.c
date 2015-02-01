@@ -224,6 +224,8 @@ char* GetDuid(int idSize)
 	char* pId = NULL;
 	char* pDuid = NULL;
 	char info[] = {0xca, 0xfe, 0xbe, 0xbe, 0x78, 0x07, 0x02, 0x03};
+	char *pKeyVersion = NULL;
+	const char *version = "1.0#";
 
 	if(idSize <= 0)
 	{
@@ -244,9 +246,14 @@ char* GetDuid(int idSize)
 
 	pId = Base64Encoding(pDuid, idSize);
 
+	pKeyVersion = (char*)calloc(strlen(pId)+strlen(version)+1, sizeof(char));
+	strncpy(pKeyVersion, version, strlen(version));
+	strncat(pKeyVersion, pId, strlen(pId));
+
+	free(pId);
 	free(pKey);
 	free(pDuid);
 	
-	return pId;
+	return pKeyVersion;
 }
 
