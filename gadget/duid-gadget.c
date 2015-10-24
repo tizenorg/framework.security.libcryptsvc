@@ -18,78 +18,56 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+
 #include <SecCryptoSvc.h>
 
-int main(int argc, char** argv)
+int main()
 {
-	char* pKey = NULL;
-	char* pId = NULL;
-	char* pDuid = NULL;
-	char info[] = {0xca, 0xfe, 0xbe, 0xbe, 0x78, 0x07, 0x02, 0x03};
-	bool result = true;
-	int keyLen = 20;
-	char *pKeyVersion = NULL;
 	const char *version = "1.0#";
-/*	if(argc != 2)
-	{
-		fprintf(stderr, "Invalid Input [%d]\n", argc);
-		return 0;
-	}
-	
-	keyLen = atoi(argv[1]);
-	if(keyLen <= 0)
-	{	
-		fprintf(stderr, "Failed to get duild\n");
-		return 0;
-	}
-*/
-	pKey = (char*)malloc(keyLen);
-	if(pKey == NULL)
-	{
-		return 0;
-	}
-	if(SecFrameGeneratePlatformUniqueKey(keyLen, pKey) != true)
-	{
-		free(pKey);
-		//fprintf(stderr, "Failed to get duid\n");
-		return 0;
+	char info[] = {0xca, 0xfe, 0xbe, 0xbe, 0x78, 0x07, 0x02, 0x03};
+
+	int ret = 0;
+	int keyLen = 20;
+	unsigned char *pKey = NULL;
+	unsigned char *pDuid = NULL;
+	char *pId = NULL;
+	char *pKeyVersion = NULL;
+
+	if (!(pKey = (unsigned char *)malloc(keyLen)))
+		goto exit;
+
+	if (!SecFrameGeneratePlatformUniqueKey(keyLen, pKey)) {
+		fprintf(stderr, "Failed to get duid\n");
+		goto exit;
 	}
 
-	pDuid = (char*)malloc(keyLen);
-	if(pDuid == NULL)
-	{
-		free(pKey);
-		return 0;
-	}
-    PKCS5_PBKDF2_HMAC_SHA1(info, 8, (unsigned char*)pKey, keyLen, 1, keyLen, (unsigned char*)pDuid);
+	if (!(pDuid = (unsigned char *)malloc(keyLen)))
+		goto exit;
 
-	pId = Base64Encoding(pDuid, keyLen);
-	if(pId == NULL) {
-		free(pKey);
-		free(pDuid);
-		return 0;
-	}
-//	printf("%s", pId);
+	PKCS5_PBKDF2_HMAC_SHA1(info, 8, pKey, keyLen, 1, keyLen, pDuid);
 
-	pKeyVersion = (char*)calloc(strlen(pId)+strlen(version)+1, sizeof(char));
-	if(pKeyVersion == NULL)
-	{
-		free(pKey);
-		free(pDuid);
-		free(pId);
-		return 0;
-	}
+	if (!(pId = Base64Encoding((char *)pDuid, keyLen)))
+		goto exit;
+
+	if (!(pKeyVersion = (char *)calloc(strlen(pId) + strlen(version) + 1, sizeof(char))))
+		goto exit;
+
 	strncpy(pKeyVersion, version, strlen(version));
 	strncat(pKeyVersion, pId, strlen(pId));
 	printf("%s", pKeyVersion);
 
-	free(pKeyVersion);
-	free(pId);
+	ret = 1;
+
+exit:
 	free(pKey);
 	free(pDuid);
-	
-	return 1;
+	free(pId);
+	free(pKeyVersion);
+
+	return ret;
 }
 

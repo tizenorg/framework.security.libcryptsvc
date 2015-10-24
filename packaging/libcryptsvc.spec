@@ -8,6 +8,8 @@ Source0:    %{name}-%{version}.tar.gz
 BuildRequires: cmake
 BuildRequires: pkgconfig(dlog)
 BuildRequires: pkgconfig(openssl)
+BuildRequires: pkgconfig(dbus-1)
+BuildRequires: pkgconfig(capi-system-info)
 
 %description
 
@@ -37,7 +39,7 @@ make %{?jobs:-j%jobs}
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/license
-cat LICENSE.Apache-2.0 > %{buildroot}/usr/share/license/%{name}
+cat LICENSE > %{buildroot}/usr/share/license/%{name}
 
 %make_install
 
